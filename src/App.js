@@ -1,30 +1,41 @@
-import { useDispatch, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
-import ContactForm from "./components/ContactForm/ContactForm";
-import ContactList from "./components/ContactList/ContactList";
-import Filter from "./components/Filter/Filter";
-import { Container, Logo, Title, ContactsTitle, Message } from "./App.styled";
-import toastMsg from "./utils/toastMsg";
-import phonebook from "./img/phonebook.png";
-import { addContact, deleteContact, filterContact } from "./redux/actions";
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
+import ContactForm from './components/ContactForm/ContactForm';
+import ContactList from './components/ContactList/ContactList';
+import Filter from './components/Filter/Filter';
+import { Container, Logo, Title, ContactsTitle, Message } from './App.styled';
+import toastMsg from './utils/toastMsg';
+import phonebook from './img/phonebook.png';
+import { addNewContact, fetchContacts, deleteContact } from 'redux/asyncThunks';
+import { useEffect, useState } from 'react';
+import { nanoid } from '@reduxjs/toolkit';
 
 export default function App() {
   const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts.items);
-  const filter = useSelector((state) => state.contacts.filter);
+  const [filter, setFilter] = useState('');
+  const { contacts, loading } = useSelector(
+    state => state.phonebook,
+    shallowEqual
+  );
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
   const onContactsGroup = contacts.length !== 0 ? true : false;
   const onContactsFilter = contacts.length >= 2 ? true : false;
 
   const onChangeState = (name, number) => {
     if (matchCheckName(name, contacts)) {
-      toastMsg(name, "warn");
-      return "not success";
+      toastMsg(name, 'warn');
+      return 'not success';
     }
-    dispatch(addContact(name, number));
 
-    toastMsg(name, "success");
+    dispatch(addNewContact({ id: nanoid(), name, number }));
 
-    return "success";
+    toastMsg(name, 'success');
+
+    return 'success';
   };
 
   const matchCheckName = (name, contacts) => {
@@ -37,14 +48,16 @@ export default function App() {
   const onDelete = (id, name) => {
     dispatch(deleteContact(id));
 
-    toastMsg(name, "info");
+    toastMsg(name, 'info');
 
     if (contacts.length <= 2) {
-      onFilter("");
+      onFilter('');
     }
   };
 
-  const onFilter = (word) => dispatch(filterContact(word));
+  const onFilter = word => {
+    setFilter(word ? word.toLowerCase() : '');
+  };
 
   return (
     <Container>
@@ -54,15 +67,19 @@ export default function App() {
       </Title>
       <ContactForm onChangeState={onChangeState} />
       {onContactsGroup ? (
-        <>
-          <ContactsTitle>Contacts</ContactsTitle>
-          {onContactsFilter && <Filter onFilter={onFilter} filter={filter} />}
-          <ContactList
-            contacts={contacts}
-            filter={filter}
-            onDelete={onDelete}
-          />
-        </>
+        loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <ContactsTitle>Contacts</ContactsTitle>
+            {onContactsFilter && <Filter onFilter={onFilter} filter={filter} />}
+            <ContactList
+              contacts={contacts}
+              filter={filter}
+              onDelete={onDelete}
+            />
+          </>
+        )
       ) : (
         <Message>You have no saved contacts</Message>
       )}

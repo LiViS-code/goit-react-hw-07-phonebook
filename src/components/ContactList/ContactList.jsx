@@ -1,13 +1,13 @@
-import PropTypes from "prop-types";
-import { IconContext } from "react-icons";
-import { FcDeleteDatabase } from "react-icons/fc";
+import PropTypes from 'prop-types';
+import { IconContext } from 'react-icons';
+import { FcDeleteDatabase } from 'react-icons/fc';
 import {
   ContastsList,
   ContactItem,
   ContactNote,
   Link,
-} from "./ContactList.styled";
-import { Button } from "../ContactForm/ContactForm.styled";
+} from './ContactList.styled';
+import { Button } from '../ContactForm/ContactForm.styled';
 
 export default function ContactList({ contacts, filter, onDelete }) {
   let filterContacts = contacts;
@@ -23,8 +23,8 @@ export default function ContactList({ contacts, filter, onDelete }) {
       {filterContacts.map(({ id, name, number }) => (
         <ContactItem key={id}>
           <ContactNote>
-            {name}:{" "}
-            <Link href={"tel:+" + parseInt(number.replace(/\D+/g, ""))}>
+            {name}:{' '}
+            <Link href={'tel:+' + parseInt(number.replace(/\D+/g, ''))}>
               {number}
             </Link>
           </ContactNote>
@@ -35,8 +35,8 @@ export default function ContactList({ contacts, filter, onDelete }) {
           >
             <IconContext.Provider
               value={{
-                size: "1.3em",
-                style: { verticalAlign: "middle" },
+                size: '1.3em',
+                style: { verticalAlign: 'middle' },
               }}
             >
               <FcDeleteDatabase />
