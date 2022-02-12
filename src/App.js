@@ -7,16 +7,18 @@ import { Container, Logo, Title, ContactsTitle, Message } from './App.styled';
 import toastMsg from './utils/toastMsg';
 import phonebook from './img/phonebook.png';
 import { addNewContact, fetchContacts, deleteContact } from 'redux/asyncThunks';
-import { useEffect, useState } from 'react';
+import { setFilter } from 'redux/contactSlices';
+import { useEffect } from 'react';
 import { nanoid } from '@reduxjs/toolkit';
 
 export default function App() {
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState('');
-  const { contacts, loading } = useSelector(
+  const { contacts, loading, filter } = useSelector(
     state => state.phonebook,
     shallowEqual
   );
+
+  console.log('filter', filter);
 
   useEffect(() => {
     dispatch(fetchContacts());
@@ -56,7 +58,8 @@ export default function App() {
   };
 
   const onFilter = word => {
-    setFilter(word ? word.toLowerCase() : '');
+    dispatch(setFilter(word));
+    console.log('filter', filter);
   };
 
   return (

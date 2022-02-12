@@ -3,7 +3,15 @@ import { addNewContact, fetchContacts, deleteContact } from './asyncThunks';
 
 export const contactsSlice = createSlice({
   name: 'phonebook',
-  initialState: { contacts: [], loading: false },
+  initialState: { contacts: [], loading: false, filter: '' },
+
+  reducers: {
+    setFilter: {
+      reducer: (state, { payload }) => {
+        state.filter = payload;
+      },
+    },
+  },
 
   extraReducers: {
     [fetchContacts.pending]: state => {
@@ -30,4 +38,5 @@ export const contactsSlice = createSlice({
   },
 });
 
+export const { setFilter } = contactsSlice.actions;
 export default contactsSlice.reducer;
