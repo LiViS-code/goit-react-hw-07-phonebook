@@ -10,6 +10,7 @@ import { addNewContact, fetchContacts, deleteContact } from 'redux/asyncThunks';
 import { setFilter } from 'redux/contactSlices';
 import { useEffect } from 'react';
 import { nanoid } from '@reduxjs/toolkit';
+import Loader from 'components/Loader/Loader';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -17,8 +18,6 @@ export default function App() {
     state => state.phonebook,
     shallowEqual
   );
-
-  console.log('filter', filter);
 
   useEffect(() => {
     dispatch(fetchContacts());
@@ -59,7 +58,6 @@ export default function App() {
 
   const onFilter = word => {
     dispatch(setFilter(word));
-    console.log('filter', filter);
   };
 
   return (
@@ -69,22 +67,26 @@ export default function App() {
         Phonebook
       </Title>
       <ContactForm onChangeState={onChangeState} />
-      {onContactsGroup ? (
-        loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <ContactsTitle>Contacts</ContactsTitle>
-            {onContactsFilter && <Filter onFilter={onFilter} filter={filter} />}
-            <ContactList
-              contacts={contacts}
-              filter={filter}
-              onDelete={onDelete}
-            />
-          </>
-        )
+      {loading ? (
+        <Loader />
       ) : (
-        <Message>You have no saved contacts</Message>
+        <>
+          {onContactsGroup ? (
+            <>
+              <ContactsTitle>Contacts</ContactsTitle>
+              {onContactsFilter && (
+                <Filter onFilter={onFilter} filter={filter} />
+              )}
+              <ContactList
+                contacts={contacts}
+                filter={filter}
+                onDelete={onDelete}
+              />
+            </>
+          ) : (
+            <Message>You have no saved contacts</Message>
+          )}
+        </>
       )}
     </Container>
   );
